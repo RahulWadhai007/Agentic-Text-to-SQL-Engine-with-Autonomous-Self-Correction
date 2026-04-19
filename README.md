@@ -1431,39 +1431,5 @@ Navigate to `http://localhost:8501` in your browser.
 
 ---
 
-## 10. Presentation Talking Points
-
-### Opening Statement
-> "I built an AI agent that doesn't just generate SQL — it tests its own work, reads its own error messages, and fixes its own mistakes. It's the difference between autocomplete and an autonomous junior developer."
-
-### Key Differentiators to Highlight
-
-1. **Self-Correction Loop** — "Most Text-to-SQL tools generate one query and hope for the best. Ours autonomously retries up to 3 times, feeding PostgreSQL error messages back to the LLM so it can learn from its mistakes."
-
-2. **Enterprise Security** — "We use PostgreSQL's native Row-Level Security. The database itself enforces access control — even if the AI hallucinates a malicious query, the database won't return restricted data."
-
-3. **Clean Architecture** — "The codebase follows strict separation of concerns: UI → API → Core → Services. You could swap Streamlit for React, or PostgreSQL for MySQL, without touching the AI logic."
-
-4. **Dynamic Schema** — "The agent reads the database schema at runtime. You can add tables, rename columns — the agent adapts automatically."
-
-5. **Local LLM** — "We run a local LLM via LM Studio. Zero API costs, full data privacy — your company's data never leaves the machine."
-
-6. **Observability** — "Every LLM call is traced via LangSmith. We can debug the agent's reasoning, see token usage, and monitor latency in production."
-
-### Potential Interview Questions & Answers
-
-**Q: Why LangGraph instead of simple function calls?**
-> A: LangGraph gives us first-class support for cycles (retry loops), checkpointing (state persistence), and conditional routing. Building this with raw function calls would require manually managing state, exit conditions, and thread safety.
-
-**Q: Why not use LangChain's SQL Agent directly?**
-> A: LangChain's built-in SQL agent uses a generic toolkit. Our custom graph gives us control over prompts, error handling, RLS enforcement, and retry logic — things that matter for production systems.
-
-**Q: How would you scale this?**
-> A: Replace MemorySaver with a Redis/PostgreSQL checkpointer for distributed state, deploy the API behind a load balancer, and swap the local LLM for a hosted API (GPT-4, Claude) for higher accuracy.
-
-**Q: What if the LLM generates a DROP TABLE query?**
-> A: The `ai_agent` PostgreSQL role only has SELECT permission. Even if the LLM generates destructive SQL, the database rejects it with a permission error.
-
----
 
 *This document covers every file, every function, every line of code, and the full end-to-end data flow of the Agentic Text-to-SQL Engine with Autonomous Self-Correction.*
