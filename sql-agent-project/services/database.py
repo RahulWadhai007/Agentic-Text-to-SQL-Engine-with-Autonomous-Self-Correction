@@ -1,43 +1,47 @@
-# app/database.py
-import os
+# services/database.py
+"""
+Manages the PostgreSQL connection, schema extraction, and RLS-aware SQL execution.
+All database I/O is isolated here — no business logic, no LLM calls.
+"""
+
 import psycopg2
 from psycopg2.extras import RealDictCursor
-from dotenv import load_dotenv
+from config import settings
 
-# Load environment variables from .env file
-load_dotenv()
 
 def get_db_connection():
-    """Establishes a connection to the PostgreSQL database."""
+    """Establishes a connection to the PostgreSQL database using centralised config."""
     try:
         conn = psycopg2.connect(
-            host=os.getenv("POSTGRES_HOST", "localhost"),
-            port=os.getenv("POSTGRES_PORT", "5432"),
-            database=os.getenv("POSTGRES_DB", "business_sandbox"),
-            user=os.getenv("POSTGRES_USER", "admin"),
-            password=os.getenv("POSTGRES_PASSWORD", "securepassword123")
+            host=settings.postgres_host,
+            port=settings.postgres_port,
+            database=settings.postgres_db,
+            user=settings.postgres_user,
+            password=settings.postgres_password,
         )
         return conn
     except psycopg2.Error as e:
         print(f"Database connection failed: {e}")
         return None
 
+
 def get_database_schema() -> str:
     """
-    Extracts the schema from the database and formats it into a highly 
-    token-efficient string to be injected into the local LLM's system prompt.
+    Extracts the schema from the database and formats it into a highly
+    token-efficient string to be injected into the LLM's system prompt.
     """
     conn = get_db_connection()
     if not conn:
         return "Error: Could not connect to database."
 
+    cursor = None
     try:
         cursor = conn.cursor()
-        
-        # Query the information_schema to get tables and columns dynamically
+
+        # Query information_schema to get tables and columns dynamically
         query = """
-            SELECT table_name, column_name, data_type 
-            FROM information_schema.columns 
+            SELECT table_name, column_name, data_type
+            FROM information_schema.columns
             WHERE table_schema = 'public'
             ORDER BY table_name, ordinal_position;
         """
@@ -45,7 +49,7 @@ def get_database_schema() -> str:
         rows = cursor.fetchall()
 
         # Group columns by table
-        schema_dict = {}
+        schema_dict: dict[str, list[str]] = {}
         for table, column, dtype in rows:
             if table not in schema_dict:
                 schema_dict[table] = []
@@ -66,29 +70,33 @@ def get_database_schema() -> str:
         if conn:
             conn.close()
 
+
 def execute_sql(query: str, role: str = "admin") -> dict:
     """
     Executes a SQL query against the database, enforcing Row-Level Security (RLS).
+
+    Steps:
+      1. Switch to the restricted 'ai_agent' role so RLS policies apply.
+      2. Set the session variable `app.current_role` to the user's business role.
+      3. Execute the AI-generated query within that security context.
     """
     conn = get_db_connection()
     if not conn:
         return {"status": "error", "message": "Database connection failed."}
 
+    cursor = None
     try:
         cursor = conn.cursor(cursor_factory=RealDictCursor)
-        
-        # THE SECURITY MAGIC: Set the PostgreSQL session variable for this specific transaction
-        # To set custom session variables, use set_config() so it doesn't try to parse it as a keyword
-        
-        # NOTE: Because we are connected as 'admin' (superuser), we must switch to our read-only 'ai_agent' 
-        # role for this transaction so that Row-Level Security (RLS) is actually enforced!
+
+        # Switch to restricted role so RLS is enforced
         cursor.execute("SET ROLE ai_agent;")
-        
+
+        # Set the business role for this transaction
         cursor.execute(f"SELECT set_config('app.current_role', '{role.lower()}', true);")
-        
-        # Now run the AI's generated query
+
+        # Execute the AI-generated query
         cursor.execute(query)
-        
+
         if cursor.description:
             results = cursor.fetchall()
             return {"status": "success", "data": results}

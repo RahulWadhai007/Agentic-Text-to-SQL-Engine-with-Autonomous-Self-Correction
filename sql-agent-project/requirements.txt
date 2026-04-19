@@ -1,7 +1,19 @@
+# Core API framework
 fastapi
 uvicorn
+
+# Database
 psycopg2-binary
-sqlalchemy
+
+# AI / LangGraph
 langgraph
+langchain-openai
 langchain-community
+
+# Configuration
 python-dotenv
+
+# UI
+streamlit
+requests
+pandas

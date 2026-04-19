@@ -1,5 +1,37 @@
+# ── Sensitive / Environment ──
 .env
+.env.*
+!.env.example
+
+# ── Python ──
 __pycache__/
 *.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# ── Virtual Environments ──
 .venv/
 venv/
+myenv/
+env/
+
+# ── IDE / Editor ──
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ── OS Files ──
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# ── Docker (local volumes) ──
+pgdata/
+
+# ── Misc ──
+*.log
