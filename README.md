@@ -23,7 +23,7 @@
 7. [The Self-Correction Loop Explained](#7-the-self-correction-loop-explained)
 8. [Row-Level Security (RLS) Explained](#8-row-level-security-rls-explained)
 9. [How to Run the Project](#9-how-to-run-the-project)
-10. [Presentation Talking Points](#10-presentation-talking-points)
+
 
 ---
 
