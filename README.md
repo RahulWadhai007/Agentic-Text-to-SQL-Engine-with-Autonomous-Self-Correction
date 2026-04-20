@@ -138,27 +138,27 @@ Traditional LLM apps generate one response and stop. This project is **agentic**
 ```
 sql-agent-project/
 │
-├── .env                          # 🔒 Environment variables (passwords, API keys)
+├── .env                          #   Environment variables (passwords, API keys)
 ├── .streamlit/
-│   └── config.toml               # 🎨 Streamlit dark theme configuration
-├── docker-compose.yml            # 🐳 Spins up PostgreSQL in Docker
-├── requirements.txt              # 📦 Python dependencies
+│   └── config.toml               #   Streamlit dark theme configuration
+├── docker-compose.yml            #   Spins up PostgreSQL in Docker
+├── requirements.txt              #   Python dependencies
 │
-├── config/                       # ⚙️ LAYER 1: Configuration
+├── config/                       #    LAYER 1: Configuration
 │   ├── __init__.py               #    Re-exports the singleton settings object
 │   └── settings.py               #    Loads .env → creates immutable Settings dataclass
 │
-├── models/                       # 📐 LAYER 2: Data Models (contracts)
+├── models/                       #    LAYER 2: Data Models (contracts)
 │   ├── __init__.py               #    Re-exports AgentState, QueryRequest, QueryResponse
 │   ├── state.py                  #    AgentState — the "memory" dictionary for graph nodes
 │   └── api_models.py            #    Pydantic request/response schemas for the REST API
 │
-├── services/                     # 🔌 LAYER 3: External I/O
+├── services/                     #   LAYER 3: External I/O
 │   ├── __init__.py               #    Package marker
 │   ├── database.py               #    PostgreSQL connection, schema extraction, SQL execution
 │   └── llm.py                    #    Creates the singleton ChatOpenAI LLM client
 │
-├── core/                         # 🧠 LAYER 4: AI Brain
+├── core/                         #     LAYER 4: AI Brain
 │   ├── __init__.py               #    Package marker
 │   ├── prompts.py                #    All LLM prompt templates (system prompts)
 │   ├── parser.py                 #    Cleans raw LLM output → executable SQL
@@ -166,18 +166,18 @@ sql-agent-project/
 │   ├── graph.py                  #    Assembles the StateGraph, wires nodes, compiles
 │   └── agent.py                  #    Public façade — the ONLY entry point for external code
 │
-├── api/                          # 🌐 LAYER 5: REST API
+├── api/                          #     LAYER 5: REST API
 │   ├── __init__.py               #    Package marker
 │   └── main.py                   #    FastAPI app, routes (/ask, /), request handling
 │
-├── ui/                           # 💻 LAYER 6: Frontend
+├── ui/                           #     LAYER 6: Frontend
 │   ├── __init__.py               #    Package marker
 │   └── app.py                    #    Streamlit chat dashboard with role switching
 │
-├── db/                           # 🗄️ LAYER 7: Database Bootstrap
+├── db/                           #      LAYER 7: Database Bootstrap
 │   └── init.sql                  #    Creates tables, seeds data, sets up RLS policies
 │
-└── tests/                        # ✅ LAYER 8: Testing
+└── tests/                        #      LAYER 8: Testing
     └── test_agent.py             #    Smoke-test that invokes the agent from the command line
 ```
 
@@ -992,7 +992,7 @@ div[data-testid="stChatMessage"]:has(div[data-testid="stChatMessageAvatarUser"])
 
 ```python
 with st.sidebar:
-    st.header("🔐 Security Context")
+    st.header("Security Context")
     selected_role = st.selectbox("Login As:", ["admin", "employee"], index=0)
     st.session_state.current_role = selected_role
 ```
@@ -1023,14 +1023,14 @@ if "thread_id" not in st.session_state:
 
 The sidebar shows a list of previous chats with:
 - A button to load each chat (restores the message history).
-- A 🗑️ delete button for each chat.
-- A "➕ New Chat" button that creates a fresh thread.
+- A  delete button for each chat.
+- A "New Chat" button that creates a fresh thread.
 
 ##### Section 5: Schema Explorer (Lines 116-122)
 
 ```python
 st.subheader("Schema Explorer")
-with st.expander("📁 Customers"):
+with st.expander(" Customers"):
     st.markdown("- `customer_id` (PK)\n- `name`\n- `email`\n- `region`")
 ```
 
@@ -1317,8 +1317,8 @@ Step 13: FastAPI constructs QueryResponse:
 Step 14: HTTP 200 JSON response sent back to Streamlit
          ↓
 Step 15: Streamlit renders:
-         🟢 Success in 1 attempts
-         [🔍 View SQL] expandable section
+          Success in 1 attempts
+         [ View SQL] expandable section
          Interactive data table with 3 rows
 ```
 
@@ -1346,7 +1346,7 @@ Attempt 2:
     PostgreSQL: SUCCESS → returns [{"name": "Ravi Kumar"}]
     error_message: "" (cleared)
     should_continue: no error → "end"
-    ✅ DONE in 2 attempts
+     DONE in 2 attempts
 ```
 
 **If ALL 3 retries fail:**
